@@ -44,7 +44,7 @@ mod test {
     use super::*;
 
     #[test]
-    fn part_2_is_correct() {
+    fn d01_part_2_is_correct() {
         let input = "two1nine
 eightwothree
 abcone2threexyz

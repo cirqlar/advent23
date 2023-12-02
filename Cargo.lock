@@ -5,3 +5,7 @@ version = 3
 [[package]]
 name = "rust01"
 version = "0.1.0"
+
+[[package]]
+name = "rust02"
+version = "0.1.0"

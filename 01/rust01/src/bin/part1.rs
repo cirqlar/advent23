@@ -27,7 +27,7 @@ mod test {
     use super::*;
 
     #[test]
-    fn part_1_is_correct() {
+    fn d01_part_1_is_correct() {
         let input = "1abc2
 pqr3stu8vwx
 a1b2c3d4e5f
