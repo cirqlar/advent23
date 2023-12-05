@@ -2,3 +2,6 @@
 resolver = "2"
 
 members = ["*/rust*"]
+
+[workspace.dependencies]
+itertools = "0.12.0"
