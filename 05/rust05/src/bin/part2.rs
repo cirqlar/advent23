@@ -1,3 +1,4 @@
+use core::ops::Range;
 use itertools::Itertools;
 use std::collections::VecDeque;
 
@@ -7,12 +8,6 @@ fn main() {
     let answer = process(input);
 
     println!("Answer {answer}");
-}
-
-#[derive(Debug)]
-struct Range {
-    start: u64,
-    end: u64,
 }
 
 #[derive(Debug)]
@@ -35,10 +30,7 @@ fn process(input: &str) -> u64 {
         .map(|mut c| {
             let start = c.next().expect("should have");
             let length = c.next().expect("should have");
-            Range {
-                start,
-                end: start + length,
-            }
+            start..(start + length)
         })
         .collect::<Vec<_>>();
 
@@ -56,7 +48,7 @@ fn process(input: &str) -> u64 {
                 })
                 .collect::<Vec<_>>()
         })
-        .fold(seeds, |in_ranges: Vec<Range>, v| {
+        .fold(seeds, |in_ranges: Vec<Range<u64>>, v| {
             let mut transformed = Vec::new();
             let mut left = VecDeque::from(in_ranges);
 
@@ -71,16 +63,10 @@ fn process(input: &str) -> u64 {
                             end: t.to_start + (end - t.from_start),
                         });
                         if start > r.start {
-                            left.push_back(Range {
-                                start: r.start,
-                                end: start,
-                            });
+                            left.push_back(r.start..start);
                         }
                         if end < r.end {
-                            left.push_back(Range {
-                                start: end,
-                                end: r.end,
-                            })
+                            left.push_back(end..r.end)
                         }
                         found = true;
                         break;
