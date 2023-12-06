@@ -1,3 +1,5 @@
+use std::str::Lines;
+
 fn main() {
     let input = include_str!("../../../input/part1.txt");
 
@@ -6,37 +8,29 @@ fn main() {
     println!("Answer {answer}");
 }
 
+fn process_line<'a>(lines: &mut Lines<'a>) -> impl Iterator<Item = u32> + 'a {
+    lines
+        .next()
+        .expect("Should have time")
+        .split(':')
+        .nth(1)
+        .expect("should have values")
+        .split_ascii_whitespace()
+        .map(|num| num.parse::<u32>().expect("should be parsable"))
+}
+
 fn process(input: &str) -> usize {
     let mut lines: std::str::Lines<'_> = input.lines();
-    let times = lines
-        .next()
-        .expect("Should have time")
-        .split(':')
-        .nth(1)
-        .expect("should have values")
-        .split_ascii_whitespace()
-        .map(|num| num.parse::<u32>().expect("should be parsable"));
-    let distances = lines
-        .next()
-        .expect("Should have time")
-        .split(':')
-        .nth(1)
-        .expect("should have values")
-        .split_ascii_whitespace()
-        .map(|num| num.parse::<u32>().expect("should be parsable"));
+    let times = process_line(&mut lines);
+    let distances = process_line(&mut lines);
 
     times
         .zip(distances)
         .map(|(time, distance)| {
             let root: f64 = ((time.pow(2) - (4 * distance)) as f64).sqrt();
-            let bound_1_f64 = ((time as f64) - root) / 2.0;
-            let mut bound_1 = bound_1_f64.ceil() as u32;
-            let bound_2_f64 = ((time as f64) + root) / 2.0;
-            let bound_2 = bound_2_f64.ceil() as u32;
+            let bound_1 = (((time as f64) - root) / 2.0) as u32 + 1;
+            let bound_2 = (((time as f64) + root) / 2.0).ceil() as u32;
 
-            if bound_1_f64 % (bound_1 as f64) == 0.0 {
-                bound_1 += 1;
-            }
             (bound_1..bound_2).count()
         })
         .product()
