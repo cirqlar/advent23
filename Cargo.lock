@@ -55,3 +55,10 @@ version = "0.1.0"
 [[package]]
 name = "rust09"
 version = "0.1.0"
+
+[[package]]
+name = "rust10"
+version = "0.1.0"
+dependencies = [
+ "itertools",
+]
