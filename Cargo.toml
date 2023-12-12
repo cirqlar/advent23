@@ -5,3 +5,5 @@ members = ["*/rust*"]
 
 [workspace.dependencies]
 itertools = "0.12.0"
+rayon = "1.8.0"
+rstest = "0.18.2"
