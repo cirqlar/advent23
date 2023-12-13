@@ -360,6 +360,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "rust13"
+version = "0.1.0"
+dependencies = [
+ "itertools",
+]
+
+[[package]]
 name = "rustc_version"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
