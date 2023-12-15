@@ -371,6 +371,13 @@ name = "rust14"
 version = "0.1.0"
 
 [[package]]
+name = "rust15"
+version = "0.1.0"
+dependencies = [
+ "rstest",
+]
+
+[[package]]
 name = "rustc_version"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
