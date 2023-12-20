@@ -78,101 +78,11 @@ fn lcm(nums: &[usize]) -> usize {
     a * b / gcd(a, b)
 }
 
-fn do_pulse(
-    nodes: &mut HashMap<String, Node>,
-    cache: &mut HashMap<(SentPulse, Node), Vec<SentPulse>>,
-    cycles: &mut HashMap<String, (usize, usize)>,
-    current_iter: usize,
-) -> (usize, usize) {
-    let mut pulses = VecDeque::from([SentPulse::new(
-        Pulse::Low,
-        String::from("broadcaster"),
-        String::from("button"),
-    )]);
-    let mut rx_pulses = Vec::new();
-
-    while !pulses.is_empty() {
-        let sent_pulse = pulses.pop_front().unwrap();
-        let SentPulse {
-            pulse,
-            sender,
-            receiver: us,
-        } = sent_pulse.clone();
-
-        if us == *"ft" {
-            println!("We got here but not necessarily there");
-        }
-        if us == *"ft" && pulse == Pulse::High {
-            println!("Cycles for {} at {}", sender, current_iter);
-            cycles
-                .entry(sender.clone())
-                .and_modify(|(start, end)| {
-                    *start = *end;
-                    *end = current_iter;
-                })
-                .or_insert((current_iter, current_iter));
-        }
-
-        if us == *"rx" {
-            rx_pulses.push(pulse);
-        }
-        let Some(node) = nodes.get_mut(&us) else {
-            continue;
-        };
-
-        if let Some(ap) = cache.get(&(sent_pulse.clone(), node.clone())) {
-            pulses.append(&mut ap.clone().into());
-            continue;
-        }
-
-        let old_node = node.clone();
-        let mut append_pulses = Vec::new();
-
-        match node {
-            Node::Broadcaster(b) => {
-                for out in b.outputs.iter().cloned() {
-                    append_pulses.push(SentPulse::new(pulse, out, us.clone()));
-                }
-            }
-            Node::FlipFlop(f) => match pulse {
-                Pulse::Low => {
-                    f.state = match f.state {
-                        OnOff::On => OnOff::Off,
-                        OnOff::Off => OnOff::On,
-                    };
-                    let pulse_to_send = match f.state {
-                        OnOff::On => Pulse::High,
-                        OnOff::Off => Pulse::Low,
-                    };
-
-                    for out in f.outputs.iter().cloned() {
-                        append_pulses.push(SentPulse::new(pulse_to_send, out, us.clone()));
-                    }
-                }
-                Pulse::High => continue,
-            },
-            Node::Conjunction(c) => {
-                c.inputs.entry(sender).and_modify(|p| *p = pulse);
-                let mut pulse_to_send = Pulse::High;
-
-                if c.inputs.values().all(|v| v == &Pulse::High) {
-                    pulse_to_send = Pulse::Low;
-                }
-
-                for out in c.outputs.iter().cloned() {
-                    append_pulses.push(SentPulse::new(pulse_to_send, out, us.clone()));
-                }
-            }
-        }
-
-        cache.insert((sent_pulse, old_node), append_pulses.clone());
-        pulses.append(&mut append_pulses.into());
-    }
-
-    let rx_high = rx_pulses.iter().filter(|p| *p == &Pulse::High).count();
-
-    (rx_high, rx_pulses.len() - rx_high)
-}
+// fn do_pulse(
+//     nodes: &mut HashMap<String, Node>,
+//     cache: &mut ,
+//     cycles: &mut HashMap<String, (usize, usize)>,
+//     current_iter: usize,
 
 fn process(input: &str) -> usize {
     let mut nodes = input
@@ -221,60 +131,91 @@ fn process(input: &str) -> usize {
         }
     }
 
-    let mut cache = HashMap::new();
-    let mut cycles = HashMap::new();
+    let Node::Conjunction(prev_node) = nodes
+        .iter()
+        .find(|(_, v)| {
+            if let Node::Conjunction(v) = v {
+                v.outputs.contains(&"rx".into())
+            } else {
+                false
+            }
+        })
+        .unwrap()
+        .1
+    else {
+        panic!("whys")
+    };
+    let prev_node_inputs = prev_node.inputs.keys().cloned().collect::<Vec<_>>();
+    let mut input_num_cycle = HashMap::new();
 
-    for i in 0..1_000_000_000 {
-        let res = do_pulse(&mut nodes, &mut cache, &mut cycles, i);
+    'overall: for i in 1.. {
+        let mut pulses = VecDeque::from([SentPulse::new(
+            Pulse::Low,
+            String::from("broadcaster"),
+            String::from("button"),
+        )]);
 
-        let Node::Conjunction(ft_node) = nodes.get("ft").unwrap() else {
-            panic!("what??");
-        };
+        while !pulses.is_empty() {
+            let sent_pulse = pulses.pop_front().unwrap();
+            let SentPulse {
+                pulse,
+                sender,
+                receiver: us,
+            } = sent_pulse.clone();
 
-        if cycles.keys().len() == ft_node.inputs.len()
-            && cycles.values().all(|(start, end)| start != end)
-        {
-            let answer = lcm(&cycles
-                .values()
-                .map(|(start, end)| end - start)
-                .collect::<Vec<_>>());
+            let Some(node) = nodes.get_mut(&us) else {
+                continue;
+            };
 
-            println!("After run {} our answer is {}", i, answer);
-            break;
+            if prev_node_inputs.contains(&us)
+                && pulse == Pulse::Low
+                && !input_num_cycle.contains_key(&us)
+            {
+                input_num_cycle.insert(us.clone(), i);
+
+                if input_num_cycle.len() == prev_node_inputs.len() {
+                    break 'overall;
+                }
+            }
+
+            match node {
+                Node::Broadcaster(b) => {
+                    for out in b.outputs.iter().cloned() {
+                        pulses.push_back(SentPulse::new(pulse, out, us.clone()));
+                    }
+                }
+                Node::FlipFlop(f) => match pulse {
+                    Pulse::Low => {
+                        f.state = match f.state {
+                            OnOff::On => OnOff::Off,
+                            OnOff::Off => OnOff::On,
+                        };
+                        let pulse_to_send = match f.state {
+                            OnOff::On => Pulse::High,
+                            OnOff::Off => Pulse::Low,
+                        };
+
+                        for out in f.outputs.iter().cloned() {
+                            pulses.push_back(SentPulse::new(pulse_to_send, out, us.clone()));
+                        }
+                    }
+                    Pulse::High => continue,
+                },
+                Node::Conjunction(c) => {
+                    c.inputs.entry(sender).and_modify(|p| *p = pulse);
+                    let mut pulse_to_send = Pulse::High;
+
+                    if c.inputs.values().all(|v| v == &Pulse::High) {
+                        pulse_to_send = Pulse::Low;
+                    }
+
+                    for out in c.outputs.iter().cloned() {
+                        pulses.push_back(SentPulse::new(pulse_to_send, out, us.clone()));
+                    }
+                }
+            }
         }
-
-        if res.1 > 0 {
-            println!("After run {} we have {} highs and {} lows", i, res.0, res.1);
-            break;
-        }
     }
 
-    0
-}
-
-#[cfg(test)]
-mod test {
-    use super::*;
-
-    #[test]
-    fn d20_part_1_is_correct_01() {
-        let input = "broadcaster -> a, b, c
-%a -> b
-%b -> c
-%c -> inv
-&inv -> a";
-
-        assert_eq!(process(input), 32000000);
-    }
-
-    #[test]
-    fn d20_part_1_is_correct_02() {
-        let input = "broadcaster -> a
-%a -> inv, con
-&inv -> b
-%b -> con
-&con -> output";
-
-        assert_eq!(process(input), 11687500);
-    }
+    lcm(&input_num_cycle.values().cloned().collect::<Vec<_>>())
 }
