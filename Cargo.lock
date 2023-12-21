@@ -416,9 +416,6 @@ version = "0.1.0"
 [[package]]
 name = "rust10"
 version = "0.1.0"
-dependencies = [
- "itertools",
-]
 
 [[package]]
 name = "rust11"
@@ -478,6 +475,13 @@ version = "0.1.0"
 [[package]]
 name = "rust20"
 version = "0.1.0"
+
+[[package]]
+name = "rust21"
+version = "0.1.0"
+dependencies = [
+ "pathfinding",
+]
 
 [[package]]
 name = "rustc-hash"
