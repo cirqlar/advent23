@@ -80,7 +80,7 @@ mod test {
     use super::*;
 
     #[test]
-    fn d20_part_1_is_correct_01() {
+    fn d21_part_1_is_correct_01() {
         let input = "...........
 .....###.#.
 .###.##..#.
@@ -97,7 +97,7 @@ mod test {
     }
 
     #[test]
-    fn d20_part_1_is_correct_02() {
+    fn d21_part_1_is_correct_02() {
         let input = "...........
 .....###.#.
 .###.##..#.
