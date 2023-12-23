@@ -5,7 +5,7 @@ use std::{
 };
 
 use rayon::prelude::*;
-use rust12::{check_cached, Cache};
+use rust12_23::{check_cached, Cache};
 
 fn main() {
     let input = include_str!("../../../input/part1.txt");

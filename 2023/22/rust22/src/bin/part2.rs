@@ -1,4 +1,4 @@
-use rust22::{bricks_from_str, get_undisintigratable, to_stacked_bricks};
+use rust22_23::{bricks_from_str, get_undisintigratable, to_stacked_bricks};
 use std::collections::HashSet;
 
 fn main() {

@@ -1,4 +1,4 @@
-use rust11::process;
+use rust11_23::process;
 
 fn main() {
     let input = include_str!("../../../input/part1.txt");

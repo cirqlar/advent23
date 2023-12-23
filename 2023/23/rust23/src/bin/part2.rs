@@ -1,7 +1,7 @@
 use itertools::Itertools;
 use petgraph::graph::UnGraph;
 
-use rust23::{explore, fill_petgraph, get_max_ways, GraphNode, Vec2};
+use rust23_23::{explore, fill_petgraph, get_max_ways, GraphNode, Vec2};
 
 fn main() {
     let input = include_str!("../../../input/part1.txt");

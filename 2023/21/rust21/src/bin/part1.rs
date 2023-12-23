@@ -1,6 +1,6 @@
 use pathfinding::prelude::dijkstra_all;
 
-use rust21::{Node, Vec2};
+use rust21_23::{Node, Vec2};
 use std::collections::HashMap;
 
 fn main() {

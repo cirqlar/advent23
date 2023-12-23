@@ -1,1 +1,12 @@
-/target
+# Ignore all
+*
+
+# Unignore all with extensions
+!*.*
+
+# Unignore all dirs
+!*/
+
+# Rust stuff
+target
+Cargo.lock

@@ -385,54 +385,90 @@ dependencies = [
 ]
 
 [[package]]
-name = "rust01"
+name = "rust01_22"
 version = "0.1.0"
 
 [[package]]
-name = "rust02"
+name = "rust01_23"
 version = "0.1.0"
 
 [[package]]
-name = "rust03"
+name = "rust02_22"
 version = "0.1.0"
 
 [[package]]
-name = "rust04"
+name = "rust02_23"
 version = "0.1.0"
 
 [[package]]
-name = "rust05"
+name = "rust03_22"
+version = "0.1.0"
+
+[[package]]
+name = "rust03_23"
+version = "0.1.0"
+
+[[package]]
+name = "rust04_22"
+version = "0.1.0"
+
+[[package]]
+name = "rust04_23"
+version = "0.1.0"
+
+[[package]]
+name = "rust05_22"
+version = "0.1.0"
+
+[[package]]
+name = "rust05_23"
 version = "0.1.0"
 dependencies = [
  "itertools",
 ]
 
 [[package]]
-name = "rust06"
+name = "rust06_22"
 version = "0.1.0"
 
 [[package]]
-name = "rust07"
+name = "rust06_23"
 version = "0.1.0"
 
 [[package]]
-name = "rust08"
+name = "rust07_22"
 version = "0.1.0"
 
 [[package]]
-name = "rust09"
+name = "rust07_23"
 version = "0.1.0"
 
 [[package]]
-name = "rust10"
+name = "rust08_22"
 version = "0.1.0"
 
 [[package]]
-name = "rust11"
+name = "rust08_23"
 version = "0.1.0"
 
 [[package]]
-name = "rust12"
+name = "rust09_22"
+version = "0.1.0"
+
+[[package]]
+name = "rust09_23"
+version = "0.1.0"
+
+[[package]]
+name = "rust10_23"
+version = "0.1.0"
+
+[[package]]
+name = "rust11_23"
+version = "0.1.0"
+
+[[package]]
+name = "rust12_23"
 version = "0.1.0"
 dependencies = [
  "rayon",
@@ -440,68 +476,68 @@ dependencies = [
 ]
 
 [[package]]
-name = "rust13"
+name = "rust13_23"
 version = "0.1.0"
 dependencies = [
  "itertools",
 ]
 
 [[package]]
-name = "rust14"
+name = "rust14_23"
 version = "0.1.0"
 
 [[package]]
-name = "rust15"
+name = "rust15_23"
 version = "0.1.0"
 dependencies = [
  "rstest",
 ]
 
 [[package]]
-name = "rust16"
+name = "rust16_23"
 version = "0.1.0"
 dependencies = [
  "rayon",
 ]
 
 [[package]]
-name = "rust17"
+name = "rust17_23"
 version = "0.1.0"
 dependencies = [
  "pathfinding",
 ]
 
 [[package]]
-name = "rust18"
+name = "rust18_23"
 version = "0.1.0"
 dependencies = [
  "itertools",
 ]
 
 [[package]]
-name = "rust19"
+name = "rust19_23"
 version = "0.1.0"
 
 [[package]]
-name = "rust20"
+name = "rust20_23"
 version = "0.1.0"
 
 [[package]]
-name = "rust21"
+name = "rust21_23"
 version = "0.1.0"
 dependencies = [
  "pathfinding",
 ]
 
 [[package]]
-name = "rust22"
+name = "rust22_23"
 version = "0.1.0"
 dependencies = [
  "itertools",
 ]
 
 [[package]]
-name = "rust23"
+name = "rust23_23"
 version = "0.1.0"
 dependencies = [
  "itertools",

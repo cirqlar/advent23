@@ -1,7 +1,7 @@
 use pathfinding::prelude::dijkstra_all;
 use std::collections::HashMap;
 
-use rust21::{Node, Vec2};
+use rust21_23::{Node, Vec2};
 
 fn main() {
     let input = include_str!("../../../input/part1.txt");
