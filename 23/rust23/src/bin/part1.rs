@@ -1,7 +1,9 @@
-use pathfinding::prelude::dijkstra_all;
-use std::collections::{BTreeSet, HashMap};
+use itertools::Itertools;
 
-use rust23::Vec2;
+use petgraph::graph::DiGraph;
+use std::collections::BTreeSet;
+
+use rust23::{explore, fill_petgraph, get_max_ways, GraphNode, Vec2};
 
 fn main() {
     let input = include_str!("../../../input/part1.txt");
@@ -21,96 +23,36 @@ fn process(input: &str) -> usize {
     let grid_width = input.lines().next().unwrap().len();
     let grid_height = input.lines().count();
     let grid_bounds = Vec2::new(grid_width as isize, grid_height as isize);
-    let grid = input
-        .lines()
-        .enumerate()
-        .flat_map(|(y, line)| {
-            line.chars()
-                .enumerate()
-                .map(move |(x, ch)| (Vec2::new(x as isize, y as isize), ch))
-        })
-        .collect::<HashMap<_, _>>();
+    let grid = input.lines().flat_map(|line| line.chars()).collect_vec();
 
     let starting_x = input.lines().next().unwrap().find('.').unwrap();
     let ending_x = input.lines().next_back().unwrap().find('.').unwrap();
 
     let start_pos = Vec2::new(starting_x as isize, 0);
-    let start_node = Node {
-        pos: start_pos,
-        visited: BTreeSet::new(),
-    };
     let end_pos = Vec2::new(ending_x as isize, (grid_height - 1) as isize);
 
-    let all_dirs = [
-        Vec2::new(1, 0),
-        Vec2::new(0, -1),
-        Vec2::new(-1, 0),
-        Vec2::new(0, 1),
-    ];
-    let reached = dijkstra_all(&start_node, |n| {
-        if n.pos == end_pos {
-            return vec![];
-        }
-
-        let mut n_visited = n.visited.clone();
-        n_visited.insert(n.pos);
-
-        let mut dirs = &all_dirs[..];
-
-        let ch = grid.get(&n.pos).unwrap();
-        match *ch {
-            '^' => dirs = &all_dirs[1..2],
-            '>' => dirs = &all_dirs[0..1],
-            '<' => dirs = &all_dirs[2..3],
-            'v' => dirs = &all_dirs[3..4],
-            _ => {}
-        }
-
-        dirs.iter()
-            .filter_map(|dir| {
-                let next_pos = n.pos + *dir;
-                if !next_pos.valid(&grid_bounds) {
-                    return None;
-                }
-                if n_visited.contains(&next_pos) {
-                    return None;
-                }
-
-                let ch = grid.get(&next_pos).unwrap();
-
-                if (*dir == all_dirs[0] && *ch == '<')
-                    || (*dir == all_dirs[1] && *ch == 'v')
-                    || (*dir == all_dirs[2] && *ch == '>')
-                    || (*dir == all_dirs[3] && *ch == '^')
-                    || *ch == '#'
-                {
-                    return None;
-                }
-
-                Some((
-                    Node {
-                        pos: next_pos,
-                        visited: n_visited.clone(),
-                    },
-                    1,
-                ))
-            })
-            .collect()
-    });
-
-    *reached
+    let graph = explore(&grid, &start_pos, &grid_bounds);
+    let end_index = graph
         .iter()
-        .filter_map(
-            |(n, (_, cost))| {
-                if n.pos == end_pos {
-                    Some(cost)
-                } else {
-                    None
-                }
-            },
-        )
-        .max()
-        .unwrap()
+        .position(|gn| {
+            if let GraphNode::Path(path) = gn {
+                path.end == end_pos
+            } else {
+                false
+            }
+        })
+        .unwrap();
+
+    let mut new_graph = DiGraph::new();
+    let node_map = fill_petgraph(&graph, &mut new_graph);
+
+    get_max_ways(
+        &new_graph,
+        *node_map.get(&0).unwrap(),
+        *node_map.get(&end_index).unwrap(),
+        &graph,
+        &node_map,
+    )
 }
 
 #[cfg(test)]
