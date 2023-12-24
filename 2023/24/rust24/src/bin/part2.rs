@@ -1,6 +1,8 @@
+#![allow(unused_imports)]
 use std::ops::{Add, Mul};
 
 use itertools::Itertools;
+#[cfg(not(windows))]
 use z3::{
     ast::{Ast, Int, Real},
     Config, Context, Solver,
@@ -44,49 +46,58 @@ struct Hail {
     vel: Vec3,
 }
 
+#[allow(unused_variables)]
 fn process(input: &str) -> i64 {
-    let hails = input
-        .lines()
-        .map(|line| {
-            let (pos, vel) = line.split_once('@').unwrap();
-            Hail {
-                pos: pos.into(),
-                vel: vel.into(),
-            }
-        })
-        .collect_vec();
-
-    let config = Config::new();
-    let ctx = Context::new(&config);
-    let solver = Solver::new(&ctx);
-
-    let rx = Real::new_const(&ctx, "rx");
-    let ry = Real::new_const(&ctx, "ry");
-    let rz = Real::new_const(&ctx, "rz");
-    let rvx = Real::new_const(&ctx, "rvx");
-    let rvy = Real::new_const(&ctx, "rvy");
-    let rvz = Real::new_const(&ctx, "rvz");
-    let sum = Real::new_const(&ctx, "sum");
-    solver.assert(&(&rx).add(&ry).add(&rz)._eq(&sum));
-
-    for (i, hail) in hails.iter().enumerate().take(3) {
-        let ti = Real::new_const(&ctx, format!("t{i}"));
-        let xi = Real::from_int(&Int::from_i64(&ctx, hail.pos.x));
-        let yi = Real::from_int(&Int::from_i64(&ctx, hail.pos.y));
-        let zi = Real::from_int(&Int::from_i64(&ctx, hail.pos.z));
-        let vxi = Real::from_int(&Int::from_i64(&ctx, hail.vel.x));
-        let vyi = Real::from_int(&Int::from_i64(&ctx, hail.vel.y));
-        let vzi = Real::from_int(&Int::from_i64(&ctx, hail.vel.z));
-        solver.assert(&(&vxi).mul(&ti).add(&xi)._eq(&(&rvx).mul(&ti).add(&rx)));
-        solver.assert(&(&vyi).mul(&ti).add(&yi)._eq(&(&rvy).mul(&ti).add(&ry)));
-        solver.assert(&(&vzi).mul(&ti).add(&zi)._eq(&(&rvz).mul(&ti).add(&rz)));
+    #[cfg(windows)]
+    {
+        panic!("Not properly set up on windows");
     }
 
-    solver.check();
-    let model = solver.get_model().unwrap();
+    #[cfg(not(windows))]
+    {
+        let hails = input
+            .lines()
+            .map(|line| {
+                let (pos, vel) = line.split_once('@').unwrap();
+                Hail {
+                    pos: pos.into(),
+                    vel: vel.into(),
+                }
+            })
+            .collect_vec();
 
-    let sum = model.get_const_interp(&sum).unwrap();
-    sum.as_real().unwrap().0
+        let config = Config::new();
+        let ctx = Context::new(&config);
+        let solver = Solver::new(&ctx);
+
+        let rx = Real::new_const(&ctx, "rx");
+        let ry = Real::new_const(&ctx, "ry");
+        let rz = Real::new_const(&ctx, "rz");
+        let rvx = Real::new_const(&ctx, "rvx");
+        let rvy = Real::new_const(&ctx, "rvy");
+        let rvz = Real::new_const(&ctx, "rvz");
+        let sum = Real::new_const(&ctx, "sum");
+        solver.assert(&(&rx).add(&ry).add(&rz)._eq(&sum));
+
+        for (i, hail) in hails.iter().enumerate().take(3) {
+            let ti = Real::new_const(&ctx, format!("t{i}"));
+            let xi = Real::from_int(&Int::from_i64(&ctx, hail.pos.x));
+            let yi = Real::from_int(&Int::from_i64(&ctx, hail.pos.y));
+            let zi = Real::from_int(&Int::from_i64(&ctx, hail.pos.z));
+            let vxi = Real::from_int(&Int::from_i64(&ctx, hail.vel.x));
+            let vyi = Real::from_int(&Int::from_i64(&ctx, hail.vel.y));
+            let vzi = Real::from_int(&Int::from_i64(&ctx, hail.vel.z));
+            solver.assert(&(&vxi).mul(&ti).add(&xi)._eq(&(&rvx).mul(&ti).add(&rx)));
+            solver.assert(&(&vyi).mul(&ti).add(&yi)._eq(&(&rvy).mul(&ti).add(&ry)));
+            solver.assert(&(&vzi).mul(&ti).add(&zi)._eq(&(&rvz).mul(&ti).add(&rz)));
+        }
+
+        solver.check();
+        let model = solver.get_model().unwrap();
+
+        let sum = model.get_const_interp(&sum).unwrap();
+        return sum.as_real().unwrap().0;
+    }
 }
 
 #[cfg(test)]
