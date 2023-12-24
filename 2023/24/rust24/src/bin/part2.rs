@@ -50,7 +50,7 @@ struct Hail {
 fn process(input: &str) -> i64 {
     #[cfg(windows)]
     {
-        panic!("Not properly set up on windows");
+        panic!("Not properly set up on windows")
     }
 
     #[cfg(not(windows))]
@@ -96,7 +96,7 @@ fn process(input: &str) -> i64 {
         let model = solver.get_model().unwrap();
 
         let sum = model.get_const_interp(&sum).unwrap();
-        return sum.as_real().unwrap().0;
+        sum.as_real().unwrap().0
     }
 }
 
