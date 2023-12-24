@@ -94,7 +94,7 @@ mod test {
     use super::*;
 
     #[test]
-    fn d24_part_1_is_correct() {
+    fn d24_part_2_is_correct() {
         let input = "19, 13, 30 @ -2,  1, -2
 18, 19, 22 @ -1, -1, -2
 20, 25, 34 @ -2, -2, -4
