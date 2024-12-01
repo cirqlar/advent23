@@ -10,3 +10,6 @@
 # Rust stuff
 target
 Cargo.lock
+
+# Inputs
+**/input/*.txt
