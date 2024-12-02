@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 rayon = { workspace = true }
+itertools = { workspace = true }
 
 [dev-dependencies]
 divan = { workspace = true }

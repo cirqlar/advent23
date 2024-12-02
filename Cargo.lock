@@ -629,6 +629,7 @@ name = "rust02_24"
 version = "0.1.0"
 dependencies = [
  "divan",
+ "itertools",
  "rayon",
 ]
 

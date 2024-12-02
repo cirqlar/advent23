@@ -12,6 +12,13 @@ fn part1() -> u32 {
 }
 
 #[divan::bench()]
+fn part1_par_lines_windows() -> u32 {
+    let input = include_str!("../../input/part1.txt");
+
+    part1::process_par_lines_windows(input)
+}
+
+#[divan::bench()]
 fn part2() -> u32 {
     let input = include_str!("../../input/part1.txt");
 
@@ -19,8 +26,22 @@ fn part2() -> u32 {
 }
 
 #[divan::bench()]
-fn part2_par() -> u32 {
+fn part2_par_iter() -> u32 {
     let input = include_str!("../../input/part1.txt");
 
-    part2::process_par(input)
+    part2::process_par_iter(input)
+}
+
+#[divan::bench()]
+fn part2_windows() -> u32 {
+    let input = include_str!("../../input/part1.txt");
+
+    part2::process_windows(input)
+}
+
+#[divan::bench()]
+fn part2_par_iter_windows() -> u32 {
+    let input = include_str!("../../input/part1.txt");
+
+    part2::process_par_iter_windows(input)
 }
