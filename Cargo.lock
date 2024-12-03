@@ -642,6 +642,13 @@ name = "rust03_23"
 version = "0.1.0"
 
 [[package]]
+name = "rust03_24"
+version = "0.1.0"
+dependencies = [
+ "divan",
+]
+
+[[package]]
 name = "rust04_22"
 version = "0.1.0"
 

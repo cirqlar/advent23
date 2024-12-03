@@ -1,0 +1,13 @@
+[package]
+name = "rust03_24"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[dev-dependencies]
+divan = { workspace = true }
+
+[[bench]]
+name = "main"
+harness = false
