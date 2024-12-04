@@ -7,7 +7,9 @@ edition = "2021"
 rayon = { workspace = true }
 
 [dev-dependencies]
-divan = { workspace = true }
+# divan = { workspace = true }
+criterion = "0.5.1"
+
 
 [[bench]]
 name = "main"
