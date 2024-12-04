@@ -40,7 +40,10 @@ pub fn process(input: &[u8]) -> i32 {
         .unwrap()
 }
 
+#[cfg(target_os = "windows")]
 const NEWLINE_OFFSET: usize = 2;
+#[cfg(not(target_os = "windows"))]
+const NEWLINE_OFFSET: usize = 1;
 
 pub fn process_flatpar(input: &[u8]) -> i32 {
     use rayon::prelude::*;

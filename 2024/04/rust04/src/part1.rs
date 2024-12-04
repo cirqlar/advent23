@@ -105,8 +105,12 @@ pub fn process(input: &[u8]) -> i32 {
     count
 }
 
+#[cfg(target_os = "windows")]
 const NEWLINE_OFFSET: usize = 2;
+#[cfg(not(target_os = "windows"))]
+const NEWLINE_OFFSET: usize = 1;
 
+#[inline]
 pub fn process_flatter(input: &[u8]) -> i32 {
     let width = input.lines().next().unwrap().unwrap().len();
     let height = input.lines().count();
