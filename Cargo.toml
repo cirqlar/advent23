@@ -11,4 +11,4 @@ ndarray = "0.16.1"
 pathfinding = "4.11.0"
 petgraph = "0.6.5"
 divan = "0.1.16"
-
+criterion = { "version" = "0.5.1" }

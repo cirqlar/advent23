@@ -1,61 +1,83 @@
 use rust04_24::{part1, part2};
 
-fn main() {
-    divan::main();
-}
+use criterion::{criterion_group, criterion_main, Criterion};
 
-#[divan::bench()]
-fn part1() -> i32 {
+pub fn criterion_benchmark(c: &mut Criterion) {
     let input = include_bytes!("../../input/part1.txt");
 
-    part1::process(input)
+    let mut group = c.benchmark_group("part1");
+
+    group.bench_function("intial", |b| b.iter(|| part1::process(input)));
+    group.bench_function("flatpar", |b| b.iter(|| part1::process_flatpar(input)));
+    group.bench_function("flatter", |b| b.iter(|| part1::process_flatter(input)));
+
+    drop(group);
+
+    let mut group = c.benchmark_group("part2");
+
+    group.bench_function("intial", |b| b.iter(|| part2::process(input)));
+    group.bench_function("flatpar", |b| b.iter(|| part2::process_flatpar(input)));
 }
 
-#[divan::bench()]
-fn part1_flatpar() -> i32 {
-    let input = include_bytes!("../../input/part1.txt");
+criterion_group!(benches, criterion_benchmark);
+criterion_main!(benches);
 
-    part1::process_flatpar(input)
-}
+// fn main() {
+//     divan::main();
+// }
 
-#[divan::bench()]
-fn part2() -> i32 {
-    let input = include_bytes!("../../input/part1.txt");
+// #[divan::bench()]
+// fn part1() -> i32 {
+//     let input = include_bytes!("../../input/part1.txt");
 
-    part2::process(input)
-}
+//     part1::process(input)
+// }
 
-#[divan::bench()]
-fn part2_flatpar() -> i32 {
-    let input = include_bytes!("../../input/part1.txt");
+// #[divan::bench()]
+// fn part1_flatpar() -> i32 {
+//     let input = include_bytes!("../../input/part1.txt");
 
-    part2::process_flatpar(input)
-}
+//     part1::process_flatpar(input)
+// }
 
-#[divan::bench()]
-fn part1_bencher(bencher: divan::Bencher) {
-    let input = include_bytes!("../../input/part1.txt");
+// #[divan::bench()]
+// fn part2() -> i32 {
+//     let input = include_bytes!("../../input/part1.txt");
 
-    bencher.bench_local(|| part1::process(input));
-}
+//     part2::process(input)
+// }
 
-#[divan::bench()]
-fn part1_flatpar_bencher(bencher: divan::Bencher) {
-    let input = include_bytes!("../../input/part1.txt");
+// #[divan::bench()]
+// fn part2_flatpar() -> i32 {
+//     let input = include_bytes!("../../input/part1.txt");
 
-    bencher.bench_local(|| part1::process_flatpar(input));
-}
+//     part2::process_flatpar(input)
+// }
 
-#[divan::bench()]
-fn part2_bencher(bencher: divan::Bencher) {
-    let input = include_bytes!("../../input/part1.txt");
+// #[divan::bench()]
+// fn part1_bencher(bencher: divan::Bencher) {
+//     let input = include_bytes!("../../input/part1.txt");
 
-    bencher.bench_local(|| part2::process(input));
-}
+//     bencher.bench_local(|| part1::process(input));
+// }
 
-#[divan::bench()]
-fn part2_flatpar_bencher(bencher: divan::Bencher) {
-    let input = include_bytes!("../../input/part1.txt");
+// #[divan::bench()]
+// fn part1_flatpar_bencher(bencher: divan::Bencher) {
+//     let input = include_bytes!("../../input/part1.txt");
 
-    bencher.bench_local(|| part2::process_flatpar(input));
-}
+//     bencher.bench_local(|| part1::process_flatpar(input));
+// }
+
+// #[divan::bench()]
+// fn part2_bencher(bencher: divan::Bencher) {
+//     let input = include_bytes!("../../input/part1.txt");
+
+//     bencher.bench_local(|| part2::process(input));
+// }
+
+// #[divan::bench()]
+// fn part2_flatpar_bencher(bencher: divan::Bencher) {
+//     let input = include_bytes!("../../input/part1.txt");
+
+//     bencher.bench_local(|| part2::process_flatpar(input));
+// }
