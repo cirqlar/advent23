@@ -1,8 +1,8 @@
 use std::{cmp::Ordering, str::from_utf8};
 
-use crate::parse::{RuleMap, NEWLINE_OFFSET};
+use crate::parse::{RuleMap, RuleMap2, ARR_WIDTH, ARR_WIDTH_U16, NEWLINE_OFFSET};
 
-pub fn process(input: &[u8], split_line_number: usize, rule_map: &RuleMap<i32>) -> i32 {
+pub fn process(input: &[u8], split_line_number: usize, rule_map: &RuleMap<u16>) -> u16 {
     let pages = &input[((5 + NEWLINE_OFFSET) * (split_line_number - 1))..];
 
     pages
@@ -17,7 +17,7 @@ pub fn process(input: &[u8], split_line_number: usize, rule_map: &RuleMap<i32>) 
                     .map(|chunk| {
                         from_utf8(&chunk[0..2])
                             .expect("Stringable")
-                            .parse::<i32>()
+                            .parse::<u16>()
                             .expect("Numberable")
                     })
                     .collect::<Vec<_>>(),
@@ -26,13 +26,8 @@ pub fn process(input: &[u8], split_line_number: usize, rule_map: &RuleMap<i32>) 
         .filter(|line| {
             for index in 0..(line.len() - 1) {
                 for other_index in (index + 1)..line.len() {
-                    if let Some((befores, _)) = rule_map.get(&line[index]) {
+                    if let Some(befores) = rule_map.get(&line[index]) {
                         if befores.contains(&line[other_index]) {
-                            return true;
-                        }
-                    }
-                    if let Some((_, afters)) = rule_map.get(&line[other_index]) {
-                        if afters.contains(&line[index]) {
                             return true;
                         }
                     }
@@ -43,20 +38,14 @@ pub fn process(input: &[u8], split_line_number: usize, rule_map: &RuleMap<i32>) 
         })
         .map(|mut line| {
             line.sort_by(|a, b| {
-                if let Some((befores, afters)) = rule_map.get(a) {
+                if let Some(befores) = rule_map.get(a) {
                     if befores.contains(b) {
                         return Ordering::Greater;
                     }
-                    if afters.contains(b) {
-                        return Ordering::Less;
-                    }
                 }
-                if let Some((befores, afters)) = rule_map.get(b) {
+                if let Some(befores) = rule_map.get(b) {
                     if befores.contains(a) {
                         return Ordering::Less;
-                    }
-                    if afters.contains(a) {
-                        return Ordering::Greater;
                     }
                 }
                 Ordering::Equal
@@ -68,7 +57,7 @@ pub fn process(input: &[u8], split_line_number: usize, rule_map: &RuleMap<i32>) 
         .sum()
 }
 
-pub fn process_par(input: &[u8], split_line_number: usize, rule_map: &RuleMap<i32>) -> i32 {
+pub fn process_par(input: &[u8], split_line_number: usize, rule_map: &RuleMap<u16>) -> u16 {
     use rayon::prelude::*;
 
     let pages = &input[((5 + NEWLINE_OFFSET) * (split_line_number - 1))..];
@@ -86,7 +75,7 @@ pub fn process_par(input: &[u8], split_line_number: usize, rule_map: &RuleMap<i3
                     .map(|chunk| {
                         from_utf8(&chunk[0..2])
                             .expect("Stringable")
-                            .parse::<i32>()
+                            .parse::<u16>()
                             .expect("Numberable")
                     })
                     .collect::<Vec<_>>(),
@@ -95,13 +84,8 @@ pub fn process_par(input: &[u8], split_line_number: usize, rule_map: &RuleMap<i3
         .filter(|line| {
             for index in 0..(line.len() - 1) {
                 for other_index in (index + 1)..line.len() {
-                    if let Some((befores, _)) = rule_map.get(&line[index]) {
+                    if let Some(befores) = rule_map.get(&line[index]) {
                         if befores.contains(&line[other_index]) {
-                            return true;
-                        }
-                    }
-                    if let Some((_, afters)) = rule_map.get(&line[other_index]) {
-                        if afters.contains(&line[index]) {
                             return true;
                         }
                     }
@@ -112,20 +96,14 @@ pub fn process_par(input: &[u8], split_line_number: usize, rule_map: &RuleMap<i3
         })
         .map(|mut line| {
             line.sort_by(|a, b| {
-                if let Some((befores, afters)) = rule_map.get(a) {
+                if let Some(befores) = rule_map.get(a) {
                     if befores.contains(b) {
                         return Ordering::Greater;
                     }
-                    if afters.contains(b) {
-                        return Ordering::Less;
-                    }
                 }
-                if let Some((befores, afters)) = rule_map.get(b) {
+                if let Some(befores) = rule_map.get(b) {
                     if befores.contains(a) {
                         return Ordering::Less;
-                    }
-                    if afters.contains(a) {
-                        return Ordering::Greater;
                     }
                 }
                 Ordering::Equal
@@ -137,7 +115,7 @@ pub fn process_par(input: &[u8], split_line_number: usize, rule_map: &RuleMap<i3
         .sum()
 }
 
-pub fn process_par_2(input: &[u8], split_line_number: usize, rule_map: &RuleMap<i32>) -> i32 {
+pub fn process_par_2(input: &[u8], split_line_number: usize, rule_map: &RuleMap<u16>) -> u16 {
     use rayon::prelude::*;
 
     let pages = &input[((5 + NEWLINE_OFFSET) * (split_line_number - 1))..];
@@ -151,7 +129,7 @@ pub fn process_par_2(input: &[u8], split_line_number: usize, rule_map: &RuleMap<
                 .map(|chunk| {
                     from_utf8(&chunk[0..2])
                         .expect("Stringable")
-                        .parse::<i32>()
+                        .parse::<u16>()
                         .expect("Numberable")
                 })
                 .collect::<Vec<_>>()
@@ -160,14 +138,8 @@ pub fn process_par_2(input: &[u8], split_line_number: usize, rule_map: &RuleMap<
             let mut continues = false;
             'outer: for index in 0..(line.len() - 1) {
                 for other_index in (index + 1)..line.len() {
-                    if let Some((befores, _)) = rule_map.get(&line[index]) {
+                    if let Some(befores) = rule_map.get(&line[index]) {
                         if befores.contains(&line[other_index]) {
-                            continues = true;
-                            break 'outer;
-                        }
-                    }
-                    if let Some((_, afters)) = rule_map.get(&line[other_index]) {
-                        if afters.contains(&line[index]) {
                             continues = true;
                             break 'outer;
                         }
@@ -179,20 +151,70 @@ pub fn process_par_2(input: &[u8], split_line_number: usize, rule_map: &RuleMap<
             }
 
             line.sort_by(|a, b| {
-                if let Some((befores, afters)) = rule_map.get(a) {
+                if let Some(befores) = rule_map.get(a) {
                     if befores.contains(b) {
                         return Ordering::Greater;
                     }
-                    if afters.contains(b) {
-                        return Ordering::Less;
-                    }
                 }
-                if let Some((befores, afters)) = rule_map.get(b) {
+                if let Some(befores) = rule_map.get(b) {
                     if befores.contains(a) {
                         return Ordering::Less;
                     }
-                    if afters.contains(a) {
-                        return Ordering::Greater;
+                }
+                Ordering::Equal
+            });
+
+            let index = line.len() / 2;
+            line[index]
+        })
+        .sum()
+}
+
+pub fn process_par_2_vec(input: &[u8], split_line_number: usize, rule_map: &RuleMap2<u16>) -> u16 {
+    use rayon::prelude::*;
+
+    let pages = &input[((5 + NEWLINE_OFFSET) * (split_line_number - 1))..];
+
+    pages
+        .chunk_by(|a, b| !a.is_ascii_whitespace() && !b.is_ascii_whitespace())
+        .filter(|line| line.len() > 1)
+        .par_bridge()
+        .map(|line| {
+            line.par_chunks(3)
+                .map(|chunk| {
+                    from_utf8(&chunk[0..2])
+                        .expect("Stringable")
+                        .parse::<u16>()
+                        .expect("Numberable")
+                })
+                .collect::<Vec<_>>()
+        })
+        .map(|mut line| {
+            let mut continues = false;
+            'outer: for index in 0..(line.len() - 1) {
+                for other_index in (index + 1)..line.len() {
+                    let starting_index: usize = ((line[index] - 10) * ARR_WIDTH_U16).into();
+                    if rule_map[starting_index..(starting_index + ARR_WIDTH)]
+                        .contains(&Some(line[other_index]))
+                    {
+                        continues = true;
+                        break 'outer;
+                    }
+                }
+            }
+            if !continues {
+                return 0;
+            }
+
+            line.sort_by(|a, b| {
+                let starting_index: usize = ((a - 10) * ARR_WIDTH_U16).into();
+                if rule_map[starting_index..(starting_index + ARR_WIDTH)].contains(&Some(*b)) {
+                    return Ordering::Greater;
+                }
+                let starting_index: usize = ((b - 10) * ARR_WIDTH_U16).into();
+                if rule_map[starting_index..(starting_index + ARR_WIDTH)].contains(&Some(*a)) {
+                    {
+                        return Ordering::Less;
                     }
                 }
                 Ordering::Equal

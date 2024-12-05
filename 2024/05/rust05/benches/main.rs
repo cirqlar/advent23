@@ -9,12 +9,16 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     let mut group = c.benchmark_group("day05_parsing");
 
     group.bench_function("intial", |b| {
-        b.iter(|| parse::parse_rules::<i32>(input, split_line_num))
+        b.iter(|| parse::parse_rules::<u16>(input, split_line_num))
+    });
+    group.bench_function("vec", |b| {
+        b.iter(|| parse::parse_rules_2::<u16>(input, split_line_num))
     });
 
     drop(group);
 
     let rule_map = parse::parse_rules(input, split_line_num);
+    let rule_map_2 = parse::parse_rules_2(input, split_line_num);
 
     let mut group = c.benchmark_group("day05_part1");
 
@@ -26,6 +30,9 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     });
     group.bench_function("par2", |b| {
         b.iter(|| part1::process_par_2(input, split_line_num, &rule_map))
+    });
+    group.bench_function("par2vec", |b| {
+        b.iter(|| part1::process_par_2_vec(input, split_line_num, &rule_map_2))
     });
 
     drop(group);
@@ -40,6 +47,9 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     });
     group.bench_function("par2", |b| {
         b.iter(|| part2::process_par_2(input, split_line_num, &rule_map))
+    });
+    group.bench_function("par2vec", |b| {
+        b.iter(|| part2::process_par_2_vec(input, split_line_num, &rule_map_2))
     });
 }
 
