@@ -6,7 +6,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     let input = include_bytes!("../../input/part1.txt");
     let split_line_num = 1177;
 
-    let mut group = c.benchmark_group("part05_parsing");
+    let mut group = c.benchmark_group("day05_parsing");
 
     group.bench_function("intial", |b| {
         b.iter(|| parse::parse_rules::<i32>(input, split_line_num))
@@ -16,7 +16,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     let rule_map = parse::parse_rules(input, split_line_num);
 
-    let mut group = c.benchmark_group("part05_part1");
+    let mut group = c.benchmark_group("day05_part1");
 
     group.bench_function("intial", |b| {
         b.iter(|| part1::process(input, split_line_num, &rule_map))
@@ -30,7 +30,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     drop(group);
 
-    let mut group = c.benchmark_group("part05_part2");
+    let mut group = c.benchmark_group("day05_part2");
 
     group.bench_function("intial", |b| {
         b.iter(|| part2::process(input, split_line_num, &rule_map))

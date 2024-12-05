@@ -5,7 +5,7 @@ use criterion::{criterion_group, criterion_main, Criterion};
 pub fn criterion_benchmark(c: &mut Criterion) {
     let input = include_bytes!("../../input/part1.txt");
 
-    let mut group = c.benchmark_group("part04_part1");
+    let mut group = c.benchmark_group("day04_part1");
 
     group.bench_function("intial", |b| b.iter(|| part1::process(input)));
     group.bench_function("flatpar", |b| b.iter(|| part1::process_flatpar(input)));
@@ -13,7 +13,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     drop(group);
 
-    let mut group = c.benchmark_group("part04_part2");
+    let mut group = c.benchmark_group("day04_part2");
 
     group.bench_function("intial", |b| b.iter(|| part2::process(input)));
     group.bench_function("flatpar", |b| b.iter(|| part2::process_flatpar(input)));
