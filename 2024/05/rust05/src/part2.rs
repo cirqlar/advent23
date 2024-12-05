@@ -144,42 +144,40 @@ pub fn process_par_2(input: &[u8], split_line_number: usize, rule_map: &RuleMap<
 
     pages
         .chunk_by(|a, b| !a.is_ascii_whitespace() && !b.is_ascii_whitespace())
+        .filter(|line| line.len() > 1)
         .par_bridge()
-        .filter_map(|line| {
-            if line.len() < 2 {
-                return None;
-            }
-
-            Some(
-                line.par_chunks(3)
-                    .map(|chunk| {
-                        from_utf8(&chunk[0..2])
-                            .expect("Stringable")
-                            .parse::<i32>()
-                            .expect("Numberable")
-                    })
-                    .collect::<Vec<_>>(),
-            )
+        .map(|line| {
+            line.par_chunks(3)
+                .map(|chunk| {
+                    from_utf8(&chunk[0..2])
+                        .expect("Stringable")
+                        .parse::<i32>()
+                        .expect("Numberable")
+                })
+                .collect::<Vec<_>>()
         })
-        .filter(|line| {
-            for index in 0..(line.len() - 1) {
+        .map(|mut line| {
+            let mut continues = false;
+            'outer: for index in 0..(line.len() - 1) {
                 for other_index in (index + 1)..line.len() {
                     if let Some((befores, _)) = rule_map.get(&line[index]) {
                         if befores.contains(&line[other_index]) {
-                            return true;
+                            continues = true;
+                            break 'outer;
                         }
                     }
                     if let Some((_, afters)) = rule_map.get(&line[other_index]) {
                         if afters.contains(&line[index]) {
-                            return true;
+                            continues = true;
+                            break 'outer;
                         }
                     }
                 }
             }
+            if !continues {
+                return 0;
+            }
 
-            false
-        })
-        .map(|mut line| {
             line.sort_by(|a, b| {
                 if let Some((befores, afters)) = rule_map.get(a) {
                     if befores.contains(b) {
