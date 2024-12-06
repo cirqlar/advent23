@@ -34,7 +34,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     drop(group);
 
     let possibles = parse::process_two(&parsed_input);
-    let (_, possibles2) = part1::process_return(&parsed_input, grid_size);
+    let possibles2 = part1::process_internal(&parsed_input, grid_size);
 
     let mut group = c.benchmark_group("day06_part2");
 
@@ -43,7 +43,11 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     });
 
     group.bench_function("limited_set", |b| {
-        b.iter(|| part2::process(&parsed_input, grid_size, &possibles2))
+        b.iter(|| part2::process_bools(&parsed_input, grid_size, &possibles2))
+    });
+
+    group.bench_function("limited_set_and_sum", |b| {
+        b.iter(|| part2::process_bools_sum(&parsed_input, grid_size, &possibles2))
     });
 }
 

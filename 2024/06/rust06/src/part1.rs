@@ -47,7 +47,7 @@ pub fn process(input: &[u8], grid_size: usize) -> i32 {
         .unwrap()
 }
 
-pub fn process_return(input: &[u8], grid_size: usize) -> (i32, Vec<usize>) {
+pub fn process_internal(input: &[u8], grid_size: usize) -> Vec<bool> {
     let start_index = input
         .iter()
         .position(|ch| ch == &b'^')
@@ -87,12 +87,13 @@ pub fn process_return(input: &[u8], grid_size: usize) -> (i32, Vec<usize>) {
     }
 
     visited_positions
+}
+
+pub fn process_return(input: &[u8], grid_size: usize) -> i32 {
+    process_internal(input, grid_size)
         .iter()
-        .enumerate()
-        .filter(|(ind, b)| **b && ind != &start_index)
-        .fold((1, vec![]), |mut acc, (ind, _)| {
-            acc.0 += 1;
-            acc.1.push(ind);
-            acc
-        })
+        .filter(|b| **b)
+        .count()
+        .try_into()
+        .unwrap()
 }
