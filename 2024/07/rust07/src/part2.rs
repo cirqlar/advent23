@@ -1,7 +1,5 @@
 use std::{collections::VecDeque, str::from_utf8};
 
-use crate::num_digits;
-
 pub fn process(input: &[u8]) -> u64 {
     use rayon::prelude::*;
 
@@ -82,8 +80,8 @@ pub fn process(input: &[u8]) -> u64 {
                 }
 
                 // Check concatenate
-                let consider_len = num_digits(consider);
-                let tot_len = num_digits(tot);
+                let consider_len = crate::num_digits_v2(consider);
+                let tot_len = crate::num_digits_v2(tot);
 
                 if consider_len < tot_len && tot % 10_u64.pow(consider_len) == consider {
                     options.push_back((tot / 10_u64.pow(consider_len), skip + 1));
