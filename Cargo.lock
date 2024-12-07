@@ -888,6 +888,14 @@ name = "rust07_23"
 version = "0.1.0"
 
 [[package]]
+name = "rust07_24"
+version = "0.1.0"
+dependencies = [
+ "criterion",
+ "rayon",
+]
+
+[[package]]
 name = "rust08_22"
 version = "0.1.0"
 
