@@ -9,7 +9,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     {
         let mut group = c.benchmark_group("day08_parse");
 
-        group.bench_function("v2", |b| b.iter(|| parse::process_2(input)));
+        group.bench_function("default", |b| b.iter(|| parse::process_2(input)));
     }
 
     let (antenna_keys, antenna_vals) = parse::process_2(input);
@@ -17,16 +17,16 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     {
         let mut group = c.benchmark_group("day08_part1");
 
-        group.bench_function("initial", |b| {
-            b.iter(|| part1::process(&antenna_keys, &antenna_vals, grid_size))
+        group.bench_function("default", |b| {
+            b.iter(|| part1::process(&antenna_keys, &antenna_vals, grid_size, input.len()))
         });
     }
 
     {
         let mut group = c.benchmark_group("day08_part2");
 
-        group.bench_function("initial", |b| {
-            b.iter(|| part2::process(&antenna_keys, &antenna_vals, grid_size))
+        group.bench_function("default", |b| {
+            b.iter(|| part2::process(&antenna_keys, &antenna_vals, grid_size, input.len()))
         });
     }
 }
