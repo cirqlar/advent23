@@ -8,7 +8,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     {
         let mut group = c.benchmark_group("day04_part1");
 
-        group.bench_function("initial", |b| b.iter(|| part1::process(input)));
+        group.bench_function("default", |b| b.iter(|| part1::process(input)));
         group.bench_function("flatpar", |b| b.iter(|| part1::process_flatpar(input)));
         group.bench_function("flatter", |b| b.iter(|| part1::process_flatter(input)));
     }
@@ -16,7 +16,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     {
         let mut group = c.benchmark_group("day04_part2");
 
-        group.bench_function("initial", |b| b.iter(|| part2::process(input)));
+        group.bench_function("default", |b| b.iter(|| part2::process(input)));
         group.bench_function("flatpar", |b| b.iter(|| part2::process_flatpar(input)));
     }
 }
