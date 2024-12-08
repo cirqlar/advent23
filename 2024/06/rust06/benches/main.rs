@@ -9,7 +9,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     let mut group = c.benchmark_group("day06_parse");
 
-    group.bench_function("intial", |b| b.iter(|| parse::process(input)));
+    group.bench_function("initial", |b| b.iter(|| parse::process(input)));
 
     drop(group);
 
@@ -17,7 +17,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     let mut group = c.benchmark_group("day06_part1");
 
-    group.bench_function("intial", |b| {
+    group.bench_function("initial", |b| {
         b.iter(|| part1::process(&parsed_input, grid_size))
     });
 
@@ -29,7 +29,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     let mut group = c.benchmark_group("day06_parse2");
 
-    group.bench_function("intial", |b| b.iter(|| parse::process_two(&parsed_input)));
+    group.bench_function("initial", |b| b.iter(|| parse::process_two(&parsed_input)));
 
     drop(group);
 
@@ -38,7 +38,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     let mut group = c.benchmark_group("day06_part2");
 
-    group.bench_function("intial", |b| {
+    group.bench_function("initial", |b| {
         b.iter(|| part2::process(&parsed_input, grid_size, &possibles))
     });
 

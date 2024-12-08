@@ -8,7 +8,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     let mut group = c.benchmark_group("day05_parsing");
 
-    group.bench_function("intial", |b| {
+    group.bench_function("initial", |b| {
         b.iter(|| parse::parse_rules::<u16>(input, split_line_num))
     });
     group.bench_function("vec", |b| {
@@ -22,7 +22,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     let mut group = c.benchmark_group("day05_part1");
 
-    group.bench_function("intial", |b| {
+    group.bench_function("initial", |b| {
         b.iter(|| part1::process(input, split_line_num, &rule_map))
     });
     group.bench_function("par", |b| {
@@ -39,7 +39,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     let mut group = c.benchmark_group("day05_part2");
 
-    group.bench_function("intial", |b| {
+    group.bench_function("initial", |b| {
         b.iter(|| part2::process(input, split_line_num, &rule_map))
     });
     group.bench_function("par", |b| {
