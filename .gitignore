@@ -13,3 +13,4 @@ Cargo.lock
 
 # Inputs
 **/input/*.txt
+flamegraph.svg
