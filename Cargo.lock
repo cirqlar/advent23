@@ -938,6 +938,15 @@ name = "rust10_23"
 version = "0.1.0"
 
 [[package]]
+name = "rust10_24"
+version = "0.1.0"
+dependencies = [
+ "criterion",
+ "itertools 0.13.0",
+ "rayon",
+]
+
+[[package]]
 name = "rust11_23"
 version = "0.1.0"
 
