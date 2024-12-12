@@ -7,7 +7,7 @@ pub fn process(input: &[u8], grid_size: usize) -> usize {
 
     let mut visited = vec![false; input.len()];
 
-    let mut totals = vec![];
+    let mut res = 0;
 
     for (index, ch) in input.iter().enumerate() {
         if ch.is_ascii_whitespace() || visited[index] {
@@ -22,9 +22,7 @@ pub fn process(input: &[u8], grid_size: usize) -> usize {
         visited[index] = true;
 
         // Make a new total for us and store a mut ref
-        totals.push((1, 0));
-        let last_index = totals.len() - 1;
-        let our_total = totals.get_mut(last_index).expect("We just made it");
+        let mut our_total = (1, 0);
 
         // Check neighbours and add to the area/primeter when found/not found
         while let Some(plot) = plot_queue.pop_front() {
@@ -95,12 +93,10 @@ pub fn process(input: &[u8], grid_size: usize) -> usize {
                 our_total.1 += 1;
             }
         }
+        res += our_total.0 * our_total.1;
     }
 
-    totals
-        .into_iter()
-        .map(|(area, perimeter)| area * perimeter)
-        .sum()
+    res
 }
 
 #[cfg(test)]

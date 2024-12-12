@@ -7,7 +7,7 @@ pub fn process(input: &[u8], grid_size: usize) -> usize {
 
     let mut visited = vec![false; input.len()];
 
-    let mut totals = vec![];
+    let mut res = 0;
 
     for (index, ch) in input.iter().enumerate() {
         if ch.is_ascii_whitespace() || visited[index] {
@@ -22,9 +22,7 @@ pub fn process(input: &[u8], grid_size: usize) -> usize {
         visited[index] = true;
 
         // Make a new total for us and store a mut ref
-        totals.push((1, vec![]));
-        let last_index = totals.len() - 1;
-        let our_total = totals.get_mut(last_index).expect("We just made it");
+        let mut our_total = (1, vec![]);
 
         // Check neighbours and add to the area/primeter when found/not found
         while let Some(plot) = plot_queue.pop_front() {
@@ -104,9 +102,7 @@ pub fn process(input: &[u8], grid_size: usize) -> usize {
                     let up_right_index = plot - (actual_grid_size - 1);
                     if input[up_right_index] == plot_type {
                         let corner = (plot_x + 1, plot_y);
-                        if !our_total.1.contains(&corner) {
-                            our_total.1.push(corner);
-                        }
+                        our_total.1.push(corner);
                     }
                 }
                 if our_perimeters[3] {
@@ -126,9 +122,7 @@ pub fn process(input: &[u8], grid_size: usize) -> usize {
                     let up_right_index = plot - (actual_grid_size - 1);
                     if input[up_right_index] == plot_type {
                         let corner = (plot_x + 1, plot_y);
-                        if !our_total.1.contains(&corner) {
-                            our_total.1.push(corner);
-                        }
+                        our_total.1.push(corner);
                     }
                 }
                 if !our_perimeters[2] && plot_y < grid_size - 1 && plot_x < grid_size - 1 {
@@ -159,9 +153,7 @@ pub fn process(input: &[u8], grid_size: usize) -> usize {
                     let down_left_index = plot + (actual_grid_size - 1);
                     if input[down_left_index] == plot_type {
                         let corner = (plot_x, plot_y + 1);
-                        if !our_total.1.contains(&corner) {
-                            our_total.1.push(corner);
-                        }
+                        our_total.1.push(corner);
                     }
                 }
             }
@@ -179,21 +171,16 @@ pub fn process(input: &[u8], grid_size: usize) -> usize {
                     let down_left_index = plot + (actual_grid_size - 1);
                     if input[down_left_index] == plot_type {
                         let corner = (plot_x, plot_y + 1);
-                        if !our_total.1.contains(&corner) {
-                            our_total.1.push(corner);
-                        }
+                        our_total.1.push(corner);
                     }
                 }
             }
         }
+
+        res += our_total.0 * our_total.1.len();
     }
 
-    // println!("{:?}", totals);
-
-    totals
-        .into_iter()
-        .map(|(area, perimeter)| area * perimeter.len())
-        .sum()
+    res
 }
 
 #[cfg(test)]
