@@ -8,13 +8,13 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     {
         let mut group = c.benchmark_group("day11_part1");
 
-        group.bench_function("default", |b| b.iter(|| part1::process(input)));
+        group.bench_function("default", |b| b.iter(|| part1::process(input, 25)));
     }
 
     {
         let mut group = c.benchmark_group("day11_part2");
 
-        group.bench_function("default", |b| b.iter(|| part2::process(input)));
+        group.bench_function("default", |b| b.iter(|| part2::process(input, 75)));
     }
 }
 
