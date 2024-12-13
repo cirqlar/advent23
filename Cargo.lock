@@ -984,6 +984,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "rust13_24"
+version = "0.1.0"
+dependencies = [
+ "criterion",
+ "itertools 0.13.0",
+ "rayon",
+]
+
+[[package]]
 name = "rust14_23"
 version = "0.1.0"
 
