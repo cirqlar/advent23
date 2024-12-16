@@ -1,0 +1,16 @@
+[package]
+name = "rust16_24"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+pathfinding.workspace = true
+# itertools = { workspace = true }
+# rayon = { workspace = true }
+
+[dev-dependencies]
+criterion = { workspace = true }
+
+[[bench]]
+name = "main"
+harness = false
