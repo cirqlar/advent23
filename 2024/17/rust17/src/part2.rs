@@ -1,4 +1,4 @@
-use std::str::from_utf8;
+use crate::get_reg_operand_a;
 
 fn get_combo_operand(operand: usize, a_reg: usize, b_reg: usize, c_reg: usize) -> usize {
     match operand {
@@ -10,8 +10,7 @@ fn get_combo_operand(operand: usize, a_reg: usize, b_reg: usize, c_reg: usize) -
     }
 }
 
-fn do_with_a(an_a_reg: usize, program: &[usize]) -> usize {
-    let mut a_reg = an_a_reg;
+fn run_program(mut a_reg: usize, program: &[usize]) -> usize {
     let mut b_reg = 0;
     let mut c_reg = 0;
 
@@ -59,13 +58,13 @@ fn do_with_a(an_a_reg: usize, program: &[usize]) -> usize {
                             .expect("Can u32 in 0"),
                     )
             }
-            x => panic!("Invalid op_code {:?}", x),
+            x => unreachable!("Invalid op_code {:?}", x),
         }
 
         prog_counter += 2;
     }
 
-    panic!("We should not be reaching here, there must always be an out");
+    unreachable!("We should not be reaching here, there must always be an out");
 }
 
 pub fn process(input: &[u8]) -> usize {
@@ -73,22 +72,14 @@ pub fn process(input: &[u8]) -> usize {
         .split(|ch| ch == &b'\n' || ch == &b'\r')
         .filter(|line| !line.is_empty());
 
-    let _a_reg = from_utf8(&interator.next().expect("a reg")[12..])
-        .expect("a reg")
-        .parse::<usize>()
-        .expect("a reg");
-    let _b_reg = from_utf8(&interator.next().expect("b reg")[12..])
-        .expect("b reg")
-        .parse::<usize>()
-        .expect("b reg");
-    let _c_reg = from_utf8(&interator.next().expect("c reg")[12..])
-        .expect("c reg")
-        .parse::<usize>()
-        .expect("c reg");
+    let _a_reg = interator.next();
+    let _b_reg = interator.next();
+    let _c_reg = interator.next();
 
     let program = interator.next().expect("program")[9..]
-        .split(|ch| ch == &b',')
-        .map(|ch| from_utf8(ch).unwrap().parse::<usize>().unwrap())
+        .iter()
+        .filter(|ch| ch != &&b',')
+        .map(get_reg_operand_a)
         .collect::<Vec<_>>();
 
     let adv_position = program
@@ -102,8 +93,7 @@ pub fn process(input: &[u8]) -> usize {
 
     // On the last loop, A must be zero so the last jump doesn't happen and the program halts
     let mut possible_values_of_a = vec![0];
-    let mut current_output_index = program.len() - 1;
-    loop {
+    for current_output_index in (0..program.len()).rev() {
         let mut new_possibilites = vec![];
 
         for value_of_a in possible_values_of_a.iter() {
@@ -116,20 +106,11 @@ pub fn process(input: &[u8]) -> usize {
         possible_values_of_a.clear();
 
         for new_a in new_possibilites.into_iter().filter(|a| a != &0) {
-            let out_value = do_with_a(new_a, &program);
+            let out_value = run_program(new_a, &program);
 
             if out_value == program[current_output_index] {
                 possible_values_of_a.push(new_a);
             }
-        }
-
-        if current_output_index > 0 {
-            /*&& !possible_values_of_a.is_empty()*/
-            // no need to check since we know it's always true
-
-            current_output_index -= 1;
-        } else {
-            break;
         }
     }
 

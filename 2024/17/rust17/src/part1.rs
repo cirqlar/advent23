@@ -1,31 +1,14 @@
 use std::str::from_utf8;
 
-fn get_combo_operand(operand: &[u8], a_reg: usize, b_reg: usize, c_reg: usize) -> usize {
-    match operand {
-        b"0" => 0,
-        b"1" => 1,
-        b"2" => 2,
-        b"3" => 3,
-        b"4" => a_reg,
-        b"5" => b_reg,
-        b"6" => c_reg,
-        x => panic!("Invalid combo operand {:?}", x),
-    }
-}
+use crate::get_reg_operand_a;
 
-fn get_reg_operand(operand: &[u8]) -> usize {
+fn get_combo_operand(operand: u8, a_reg: usize, b_reg: usize, c_reg: usize) -> usize {
     match operand {
-        b"0" => 0,
-        b"1" => 1,
-        b"2" => 2,
-        b"3" => 3,
-        b"4" => 4,
-        b"5" => 5,
-        b"6" => 6,
-        b"7" => 7,
-        b"8" => 8,
-        b"9" => 9,
-        x => panic!("Invalid reg operand {:?}", x),
+        x if x <= b'3' => (x - b'0').into(),
+        b'4' => a_reg,
+        b'5' => b_reg,
+        b'6' => c_reg,
+        x => panic!("Invalid combo operand {:?}", x),
     }
 }
 
@@ -48,7 +31,9 @@ pub fn process(input: &[u8]) -> String {
         .expect("c reg");
 
     let program = interator.next().expect("program")[9..]
-        .split(|ch| ch == &b',')
+        .iter()
+        .filter(|ch| ch != &&b',')
+        .copied()
         .collect::<Vec<_>>();
 
     let mut prog_counter = 0;
@@ -59,7 +44,7 @@ pub fn process(input: &[u8]) -> String {
         let operand = program[prog_counter + 1];
 
         match op_code {
-            b"0" => {
+            b'0' => {
                 a_reg = a_reg
                     / 2_usize.pow(
                         get_combo_operand(operand, a_reg, b_reg, c_reg)
@@ -67,17 +52,17 @@ pub fn process(input: &[u8]) -> String {
                             .expect("Can u32 in 0"),
                     )
             }
-            b"1" => b_reg ^= get_reg_operand(operand),
-            b"2" => b_reg = get_combo_operand(operand, a_reg, b_reg, c_reg) % 8,
-            b"3" => {
+            b'1' => b_reg ^= get_reg_operand_a(&operand),
+            b'2' => b_reg = get_combo_operand(operand, a_reg, b_reg, c_reg) % 8,
+            b'3' => {
                 if a_reg != 0 {
-                    prog_counter = get_reg_operand(operand);
+                    prog_counter = get_reg_operand_a(&operand);
                     continue;
                 }
             }
-            b"4" => b_reg ^= c_reg,
-            b"5" => output.push(get_combo_operand(operand, a_reg, b_reg, c_reg) % 8),
-            b"6" => {
+            b'4' => b_reg ^= c_reg,
+            b'5' => output.push(get_combo_operand(operand, a_reg, b_reg, c_reg) % 8),
+            b'6' => {
                 b_reg = a_reg
                     / 2_usize.pow(
                         get_combo_operand(operand, a_reg, b_reg, c_reg)
@@ -85,7 +70,7 @@ pub fn process(input: &[u8]) -> String {
                             .expect("Can u32 in 0"),
                     )
             }
-            b"7" => {
+            b'7' => {
                 c_reg = a_reg
                     / 2_usize.pow(
                         get_combo_operand(operand, a_reg, b_reg, c_reg)
@@ -93,7 +78,7 @@ pub fn process(input: &[u8]) -> String {
                             .expect("Can u32 in 0"),
                     )
             }
-            x => panic!("Invalid op_code {:?}", x),
+            x => unreachable!("Invalid op_code {:?}", x),
         }
 
         prog_counter += 2;
@@ -104,8 +89,6 @@ pub fn process(input: &[u8]) -> String {
         .map(|n| n.to_string())
         .collect::<Vec<_>>()
         .join(",")
-
-    // "0".into()
 }
 
 #[cfg(test)]
