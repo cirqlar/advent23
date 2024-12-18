@@ -6,7 +6,7 @@ edition = "2021"
 [dependencies]
 
 [dev-dependencies]
-divan = { workspace = true }
+divan.workspace = true
 
 [[bench]]
 name = "main"
