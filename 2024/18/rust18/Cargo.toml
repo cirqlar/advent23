@@ -7,9 +7,10 @@ edition = "2021"
 pathfinding.workspace = true
 itertools.workspace = true
 rayon.workspace = true
+rustc-hash.workspace = true
 
 [dev-dependencies]
-criterion = { workspace = true }
+criterion.workspace = true
 
 [[bench]]
 name = "main"

@@ -1,143 +1,94 @@
 use itertools::Itertools;
 use pathfinding::prelude::bfs;
+use rustc_hash::FxHashMap;
 use std::str::from_utf8;
 
 pub fn process(input: &[u8], grid_size: usize, count: usize) -> String {
-    use rayon::prelude::*;
-
+    let mut b_count = 0;
     let bytes_on_the_moon = input
         .split(|ch| ch.is_ascii_whitespace() || ch == &b',')
         .filter(|n| !n.is_empty())
         .tuples()
-        .map(|(x, y)| {
+        .enumerate()
+        .map(|(i, (x, y))| {
             let x = from_utf8(x).expect("x").parse::<usize>().expect("x");
             let y = from_utf8(y).expect("y").parse::<usize>().expect("y");
 
-            // let index = y * (grid_size + 1) + x;
+            b_count += 1;
 
-            y * (grid_size + 1) + x
+            (y * (grid_size + 1) + x, i)
         })
-        .collect::<Vec<_>>();
+        .collect::<FxHashMap<_, _>>();
 
-    let min = (count..bytes_on_the_moon.len())
-        .into_par_iter()
-        .filter(|r| {
-            let res = bfs(
-                &0,
-                |n| {
-                    let mut possibles = Vec::with_capacity(4);
+    let mut min = count;
+    let mut max = b_count;
 
-                    let nx = *n % (grid_size + 1);
-                    let ny = *n / (grid_size + 1);
+    let min = loop {
+        let check = min + ((max - min) / 2);
 
-                    if ny > 0 {
-                        let possible = *n - (grid_size + 1);
-                        if !bytes_on_the_moon[..=*r].contains(&possible) {
-                            possibles.push(possible);
-                        }
+        let res = bfs(
+            &0,
+            |n| {
+                let mut possibles = Vec::with_capacity(4);
+
+                let nx = *n % (grid_size + 1);
+                let ny = *n / (grid_size + 1);
+
+                if ny > 0 {
+                    let possible = *n - (grid_size + 1);
+                    if !bytes_on_the_moon.contains_key(&possible)
+                        || bytes_on_the_moon.get(&possible).unwrap() > &check
+                    {
+                        possibles.push(possible);
                     }
-                    if ny < grid_size {
-                        let possible = *n + (grid_size + 1);
-                        if !bytes_on_the_moon[..=*r].contains(&possible) {
-                            possibles.push(possible);
-                        }
+                }
+                if ny < grid_size {
+                    let possible = *n + (grid_size + 1);
+                    if !bytes_on_the_moon.contains_key(&possible)
+                        || bytes_on_the_moon.get(&possible).unwrap() > &check
+                    {
+                        possibles.push(possible);
                     }
-                    if nx > 0 {
-                        let possible = *n - 1;
-                        if !bytes_on_the_moon[..=*r].contains(&possible) {
-                            possibles.push(possible);
-                        }
+                }
+                if nx > 0 {
+                    let possible = *n - 1;
+                    if !bytes_on_the_moon.contains_key(&possible)
+                        || bytes_on_the_moon.get(&possible).unwrap() > &check
+                    {
+                        possibles.push(possible);
                     }
-                    if nx < grid_size {
-                        let possible = *n + 1;
-                        if !bytes_on_the_moon[..=*r].contains(&possible) {
-                            possibles.push(possible);
-                        }
+                }
+                if nx < grid_size {
+                    let possible = *n + 1;
+                    if !bytes_on_the_moon.contains_key(&possible)
+                        || bytes_on_the_moon.get(&possible).unwrap() > &check
+                    {
+                        possibles.push(possible);
                     }
+                }
 
-                    // println!("From {}/{},{} the possibles are {:?}", n, nx, ny, possibles);
+                // println!("From {}/{},{} the possibles are {:?}", n, nx, ny, possibles);
 
-                    possibles
-                },
-                |n| *n == (grid_size + 1).pow(2) - 1,
-            );
+                possibles
+            },
+            |n| *n == (grid_size + 1).pow(2) - 1,
+        );
 
-            res.is_none()
-        })
-        .min()
-        .expect("A minimum");
+        if res.is_none() {
+            max = check;
+        } else {
+            min = check;
+        }
 
-    let ans = bytes_on_the_moon[min];
+        if max - min <= 1 {
+            break max;
+        }
+    };
 
-    format!("{},{}", ans % (grid_size + 1), ans / (grid_size + 1))
-}
-
-pub fn process_bfs(input: &[u8], grid_size: usize, count: usize) -> String {
-    use rayon::prelude::*;
-
-    let bytes_on_the_moon = input
-        .split(|ch| ch.is_ascii_whitespace() || ch == &b',')
-        .filter(|n| !n.is_empty())
-        .tuples()
-        .map(|(x, y)| {
-            let x = from_utf8(x).expect("x").parse::<usize>().expect("x");
-            let y = from_utf8(y).expect("y").parse::<usize>().expect("y");
-
-            // let index = y * (grid_size + 1) + x;
-
-            y * (grid_size + 1) + x
-        })
-        .collect::<Vec<_>>();
-
-    let min = (count..bytes_on_the_moon.len())
-        .into_par_iter()
-        .by_exponential_blocks()
-        .find_first(|r| {
-            let res = bfs(
-                &0,
-                |n| {
-                    let mut possibles = Vec::with_capacity(4);
-
-                    let nx = *n % (grid_size + 1);
-                    let ny = *n / (grid_size + 1);
-
-                    if ny > 0 {
-                        let possible = *n - (grid_size + 1);
-                        if !bytes_on_the_moon[..=*r].contains(&possible) {
-                            possibles.push(possible);
-                        }
-                    }
-                    if ny < grid_size {
-                        let possible = *n + (grid_size + 1);
-                        if !bytes_on_the_moon[..=*r].contains(&possible) {
-                            possibles.push(possible);
-                        }
-                    }
-                    if nx > 0 {
-                        let possible = *n - 1;
-                        if !bytes_on_the_moon[..=*r].contains(&possible) {
-                            possibles.push(possible);
-                        }
-                    }
-                    if nx < grid_size {
-                        let possible = *n + 1;
-                        if !bytes_on_the_moon[..=*r].contains(&possible) {
-                            possibles.push(possible);
-                        }
-                    }
-
-                    // println!("From {}/{},{} the possibles are {:?}", n, nx, ny, possibles);
-
-                    possibles
-                },
-                |n| *n == (grid_size + 1).pow(2) - 1,
-            );
-
-            res.is_none()
-        })
-        .expect("A minimum");
-
-    let ans = bytes_on_the_moon[min];
+    let ans = bytes_on_the_moon
+        .into_iter()
+        .find_map(|(k, v)| (v == min).then_some(k))
+        .unwrap();
 
     format!("{},{}", ans % (grid_size + 1), ans / (grid_size + 1))
 }

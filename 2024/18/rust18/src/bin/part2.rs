@@ -8,7 +8,7 @@ fn main() {
     let grid_size = 70;
     let count = 1024;
 
-    let answer = part2::process_bfs(input, grid_size, count);
+    let answer = part2::process(input, grid_size, count);
 
     println!("Answer: {answer}");
 }

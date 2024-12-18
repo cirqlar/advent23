@@ -11,7 +11,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
         let mut group = c.benchmark_group("day18_part1");
 
         group.bench_function("default", |b| {
-            b.iter(|| part1::process_bfs(input, grid_size, count))
+            b.iter(|| part1::process(input, grid_size, count))
         });
     }
 
@@ -20,9 +20,6 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
         group.bench_function("default", |b| {
             b.iter(|| part2::process(input, grid_size, count))
-        });
-        group.bench_function("find_first", |b| {
-            b.iter(|| part2::process_bfs(input, grid_size, count))
         });
     }
 }
