@@ -36,6 +36,8 @@ fn check_line<'a>(
 }
 
 pub fn process(input: &[u8]) -> usize {
+    use rayon::prelude::*;
+
     let split_index = input
         .iter()
         .position(|ch| ch == &b'\n' || ch == &b'\r')
@@ -44,26 +46,31 @@ pub fn process(input: &[u8]) -> usize {
     let mut min = usize::MAX;
     let mut max = 0;
 
-    let towels = input[..split_index]
+    let mut towels = FxHashSet::with_capacity_and_hasher(448, FxBuildHasher);
+
+    input[..split_index]
         .split(|ch| ch == &b',' || ch.is_ascii_whitespace())
         .filter(|towel| !towel.is_empty())
-        .inspect(|towel| {
+        .for_each(|towel| {
             min = min.min(towel.len());
             max = max.max(towel.len());
-        })
-        .collect::<FxHashSet<_>>();
 
-    let mut total = 0;
-    let mut cache = FxHashMap::with_capacity_and_hasher(14656, FxBuildHasher);
+            towels.insert(towel);
+        });
 
-    for pat in input[split_index..]
-        .split(|ch| ch.is_ascii_whitespace())
+    input[split_index..]
+        .par_split(|ch| ch.is_ascii_whitespace())
         .filter(|pat| !pat.is_empty())
-    {
-        total += check_line(pat, &towels, &mut cache, min, max);
-    }
-
-    total
+        .map(|pat| {
+            check_line(
+                pat,
+                &towels,
+                &mut FxHashMap::with_capacity_and_hasher(60, FxBuildHasher),
+                min,
+                max,
+            )
+        })
+        .sum()
 }
 
 #[cfg(test)]

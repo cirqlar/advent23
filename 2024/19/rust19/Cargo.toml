@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 rustc-hash.workspace = true
+rayon.workspace = true
 
 [dev-dependencies]
 criterion.workspace = true

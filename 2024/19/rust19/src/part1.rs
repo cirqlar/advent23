@@ -2,11 +2,12 @@ use rustc_hash::{FxBuildHasher, FxHashSet};
 
 fn check_line<'a>(
     input: &'a [u8],
-    possibles: &mut FxHashSet<&'a [u8]>,
+    towels: &FxHashSet<&'a [u8]>,
+    cache: &mut FxHashSet<&'a [u8]>,
     min: usize,
     max: usize,
 ) -> bool {
-    if possibles.contains(input) {
+    if cache.contains(input) || towels.contains(input) {
         return true;
     }
 
@@ -15,11 +16,11 @@ fn check_line<'a>(
             break;
         }
 
-        if possibles.contains(&input[..len]) {
-            let rest = check_line(&input[len..], possibles, min, max);
+        if towels.contains(&input[..len]) {
+            let rest = check_line(&input[len..], towels, cache, min, max);
 
             if rest {
-                possibles.insert(input);
+                cache.insert(input);
                 return true;
             }
         }
@@ -29,6 +30,8 @@ fn check_line<'a>(
 }
 
 pub fn process(input: &[u8]) -> usize {
+    use rayon::prelude::*;
+
     let split_index = input
         .iter()
         .position(|ch| ch == &b'\n' || ch == &b'\r')
@@ -37,30 +40,30 @@ pub fn process(input: &[u8]) -> usize {
     let mut min = usize::MAX;
     let mut max = 0;
 
-    let mut towels = FxHashSet::with_capacity_and_hasher(12097, FxBuildHasher);
-
-    input[..split_index]
+    let towels = input[..split_index]
         .split(|ch| ch == &b',' || ch.is_ascii_whitespace())
         .filter(|towel| !towel.is_empty())
-        .for_each(|towel| {
+        .inspect(|towel| {
             min = min.min(towel.len());
             max = max.max(towel.len());
+        })
+        .collect::<FxHashSet<_>>();
 
-            towels.insert(towel);
-        });
-
-    let mut possible = 0;
-
-    for pat in input[split_index..]
-        .split(|ch| ch.is_ascii_whitespace())
-        .filter(|pat| !pat.is_empty())
-    {
-        if check_line(pat, &mut towels, min, max) {
-            possible += 1;
-        }
-    }
-
-    possible
+    input[split_index..]
+        .par_split(|ch| ch.is_ascii_whitespace())
+        .filter(|pat| {
+            if pat.is_empty() {
+                return false;
+            }
+            check_line(
+                pat,
+                &towels,
+                &mut FxHashSet::with_capacity_and_hasher(50, FxBuildHasher),
+                min,
+                max,
+            )
+        })
+        .count()
 }
 
 #[cfg(test)]

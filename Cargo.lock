@@ -1078,6 +1078,7 @@ name = "rust19_24"
 version = "0.1.0"
 dependencies = [
  "criterion",
+ "rayon",
  "rustc-hash 2.1.0",
 ]
 
