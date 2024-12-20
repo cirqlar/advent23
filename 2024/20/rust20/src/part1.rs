@@ -1,6 +1,5 @@
 use crate::NEWLINE_OFFSET;
 use pathfinding::prelude::bfs;
-use rustc_hash::FxHashSet;
 
 fn successors(n: usize, grid_size: usize, input: &[u8]) -> Vec<usize> {
     let actual_grid_size = grid_size + NEWLINE_OFFSET;
@@ -58,32 +57,6 @@ pub fn process(input: &[u8], grid_size: usize, save: usize) -> usize {
     for (index, n) in og_path.iter().rev().enumerate() {
         lengths[*n] = Some(index);
     }
-
-    // I don't undserstand why, but we don't need to do this?
-    // for i in 0..input.len() {
-    //     if lengths[i].is_some() {
-    //         continue;
-    //     }
-
-    //     let x = i % actual_grid_size;
-    //     // let y = i / actual_grid_size;
-
-    //     if x >= grid_size {
-    //         continue;
-    //     }
-
-    //     let path = bfs(
-    //         &i,
-    //         |n| successors(*n, grid_size, input),
-    //         |n| lengths[*n].is_some(),
-    //     );
-
-    //     if let Some(path) = path {
-    //         for i in (0..(path.len() - 1)).rev() {
-    //             lengths[path[i]] = Some(lengths[path[i + 1]].expect("already set") + 1);
-    //         }
-    //     }
-    // }
 
     og_path
         .par_iter()
@@ -194,113 +167,76 @@ pub fn process_v2(input: &[u8], grid_size: usize, save: usize) -> usize {
         lengths[*n] = Some(index);
     }
 
-    // I don't undserstand why, but we don't need to do this?
-    // for i in 0..input.len() {
-    //     if lengths[i].is_some() {
-    //         continue;
-    //     }
-
-    //     let x = i % actual_grid_size;
-    //     // let y = i / actual_grid_size;
-
-    //     if x >= grid_size {
-    //         continue;
-    //     }
-
-    //     let path = bfs(
-    //         &i,
-    //         |n| successors(*n, grid_size, input),
-    //         |n| lengths[*n].is_some(),
-    //     );
-
-    //     if let Some(path) = path {
-    //         for i in (0..(path.len() - 1)).rev() {
-    //             lengths[path[i]] = Some(lengths[path[i + 1]].expect("already set") + 1);
-    //         }
-    //     }
-    // }
-
     og_path
         .par_iter()
-        .enumerate()
         .take(og_path.len() - save)
+        .enumerate()
         .map(|(index, start)| {
-            let mut reached = FxHashSet::default();
-            reached.insert(*start);
-
             let start_x = start % actual_grid_size;
             let start_y = start / actual_grid_size;
 
             // find walls
-            let mut walls = [None; 4];
+            let mut walls = Vec::with_capacity(4);
 
             if start_x > 0 {
                 let next = start - 1;
                 if input[next] == b'#' {
-                    walls[0] = Some(next);
-                    reached.insert(next);
+                    walls.push(next);
                 }
             }
             if start_x < grid_size - 1 {
                 let next = start + 1;
                 if input[next] == b'#' {
-                    walls[1] = Some(next);
-                    reached.insert(next);
+                    walls.push(next);
                 }
             }
 
             if start_y > 0 {
                 let next = start - actual_grid_size;
                 if input[next] == b'#' {
-                    walls[2] = Some(next);
-                    reached.insert(next);
+                    walls.push(next);
                 }
             }
             if start_y < grid_size - 1 {
                 let next = start + actual_grid_size;
                 if input[next] == b'#' {
-                    walls[3] = Some(next);
-                    reached.insert(next);
+                    walls.push(next);
                 }
             }
 
             // Find empties (that aren't us)
-            let mut empties = vec![];
+            let mut empties = Vec::with_capacity(6);
 
-            walls.into_iter().flatten().for_each(|wall| {
+            for wall in walls {
                 let wall_x = wall % actual_grid_size;
                 let wall_y = wall / actual_grid_size;
 
                 if wall_x > 0 {
                     let next = wall - 1;
-                    if input[next] != b'#' && !reached.contains(&next) {
+                    if input[next] != b'#' && next != *start && !empties.contains(&next) {
                         empties.push(next);
-                        reached.insert(next);
                     }
                 }
                 if wall_x < grid_size - 1 {
                     let next = wall + 1;
-                    if input[next] != b'#' && !reached.contains(&next) {
+                    if input[next] != b'#' && next != *start && !empties.contains(&next) {
                         empties.push(next);
-                        reached.insert(next);
                     }
                 }
 
                 if wall_y > 0 {
                     let next = wall - actual_grid_size;
-                    if input[next] != b'#' && !reached.contains(&next) {
+                    if input[next] != b'#' && next != *start && !empties.contains(&next) {
                         empties.push(next);
-                        reached.insert(next);
                     }
                 }
                 if wall_y < grid_size - 1 {
                     let next = wall + actual_grid_size;
-                    if input[next] != b'#' && !reached.contains(&next) {
+                    if input[next] != b'#' && next != *start && !empties.contains(&next) {
                         empties.push(next);
-                        reached.insert(next);
                     }
                 }
-            });
+            }
 
             let mut paths = 0;
 

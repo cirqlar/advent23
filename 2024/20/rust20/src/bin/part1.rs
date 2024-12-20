@@ -8,7 +8,7 @@ fn main() {
     let grid_size = 141;
     let save = 100;
 
-    let answer = part1::process(input, grid_size, save);
+    let answer = part1::process_v2(input, grid_size, save);
 
     println!("Answer: {answer}");
 }
