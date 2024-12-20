@@ -1087,6 +1087,16 @@ name = "rust20_23"
 version = "0.1.0"
 
 [[package]]
+name = "rust20_24"
+version = "0.1.0"
+dependencies = [
+ "criterion",
+ "pathfinding",
+ "rayon",
+ "rustc-hash 2.1.0",
+]
+
+[[package]]
 name = "rust21_23"
 version = "0.1.0"
 dependencies = [
