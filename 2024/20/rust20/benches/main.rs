@@ -13,9 +13,6 @@ pub fn criterion_benchmark(c: &mut Criterion) {
         group.bench_function("default", |b| {
             b.iter(|| part1::process(input, grid_size, save))
         });
-        group.bench_function("v2", |b| {
-            b.iter(|| part1::process_v2(input, grid_size, save))
-        });
     }
 
     {

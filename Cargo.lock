@@ -1091,6 +1091,7 @@ name = "rust20_24"
 version = "0.1.0"
 dependencies = [
  "criterion",
+ "itertools 0.13.0",
  "pathfinding",
  "rayon",
  "rustc-hash 2.1.0",
