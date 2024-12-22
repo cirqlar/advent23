@@ -23,9 +23,8 @@ pub fn process(input: &[u8], grid_size: usize, save: usize) -> usize {
 
     og_path
         .par_iter()
-        .enumerate()
         .take(og_path.len() - save)
-        .map(|(index, start)| {
+        .map(|start| {
             let start_x = start % actual_grid_size;
             let start_y = start / actual_grid_size;
 
@@ -97,9 +96,9 @@ pub fn process(input: &[u8], grid_size: usize, save: usize) -> usize {
             // Check if any is short enough
             for empty in empties {
                 if let Some(len) = lengths[empty] {
-                    // let len = res.unwrap().len();
+                    let start_len = lengths[*start].unwrap();
 
-                    if index + 1 + len < og_path.len() - save {
+                    if start_len > len + 2 && start_len - len - 2 >= save {
                         paths += 1;
                     }
                 }
