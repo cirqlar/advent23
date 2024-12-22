@@ -14,8 +14,8 @@ pub fn process(input: &[u8]) -> usize {
                 n ^= n * 64;
                 n %= 16777216;
                 // 2
-                let b: f64 = n as f64;
-                let b: usize = (b / 32.0).floor() as usize;
+                let b = n as f64;
+                let b = (b / 32.0).floor() as usize;
 
                 n ^= b;
                 n %= 16777216;
