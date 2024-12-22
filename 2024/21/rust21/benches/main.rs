@@ -6,13 +6,13 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     let input = include_bytes!("../../input/part1.txt");
 
     {
-        let mut group = c.benchmark_group("day20_part1");
+        let mut group = c.benchmark_group("day21_part1");
 
         group.bench_function("default", |b| b.iter(|| part1::process(input)));
     }
 
     {
-        let mut group = c.benchmark_group("day20_part2");
+        let mut group = c.benchmark_group("day21_part2");
 
         group.bench_function("default", |b| b.iter(|| part2::process(input)));
     }
