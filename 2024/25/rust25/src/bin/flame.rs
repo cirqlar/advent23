@@ -1,0 +1,8 @@
+use rust25_24::part1;
+
+fn main() {
+    // let input = include_bytes!("../../../input/part1_example.txt");
+    let input = include_bytes!("../../../input/part1.txt");
+
+    let _answer = part1::process(input);
+}
