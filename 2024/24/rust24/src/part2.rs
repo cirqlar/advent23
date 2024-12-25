@@ -1,7 +1,6 @@
 use crate::operations::Operation;
 use itertools::Itertools;
-use rustc_hash::FxHashMap;
-use std::{collections::VecDeque, str::from_utf8};
+use std::str::from_utf8;
 
 pub fn process(input: &[u8]) -> String {
     let last_colon = input.len()
@@ -17,18 +16,7 @@ pub fn process(input: &[u8]) -> String {
             .position(|ch| ch == &b'\n')
             .expect("Exists");
 
-    let mut wires = input[..split_position]
-        .split(|ch| ch == &b'\n' || ch == &b'\r')
-        .filter(|line| !line.is_empty())
-        .map(|line| {
-            let mut key = [0; 3];
-            key.copy_from_slice(&line[0..3]);
-
-            (key, line[5] == b'1')
-        })
-        .collect::<FxHashMap<_, _>>();
-
-    let mut z_wires = Vec::with_capacity(45);
+    let mut largest_z = [0; 3];
 
     let commands = input[split_position..]
         .split(|ch| ch == &b'\n' || ch == &b'\r')
@@ -63,52 +51,13 @@ pub fn process(input: &[u8]) -> String {
                 x => unreachable!("We don't have any other commands {}", from_utf8(x).unwrap()),
             };
 
-            if a[0] == b'z' && !z_wires.contains(&a) {
-                z_wires.push(a);
-            }
-            if b[0] == b'z' && !z_wires.contains(&b) {
-                z_wires.push(b);
-            }
-            if c[0] == b'z' && !z_wires.contains(&c) {
-                z_wires.push(c);
+            if c[0] == b'z' && c > largest_z {
+                largest_z = c;
             }
 
             ret
         })
         .collect::<Vec<_>>();
-
-    z_wires.sort();
-
-    // Solve commands
-    {
-        let mut working_commands = VecDeque::from(commands.clone());
-
-        while let Some(command) = working_commands.pop_front() {
-            if !wires.contains_key(command.get_a()) || !wires.contains_key(command.get_b()) {
-                working_commands.push_back(command);
-                continue;
-            }
-
-            match &command {
-                Operation::And(a, b, c) => {
-                    let val = *wires.get(a).unwrap() && *wires.get(b).unwrap();
-                    wires.insert(*c, val);
-                }
-                Operation::Orr(a, b, c) => {
-                    let val = *wires.get(a).unwrap() || *wires.get(b).unwrap();
-                    wires.insert(*c, val);
-                }
-                Operation::Xor(a, b, c) => {
-                    let val = *wires.get(a).unwrap() != *wires.get(b).unwrap();
-                    wires.insert(*c, val);
-                }
-            }
-
-            if z_wires.iter().all(|wire| wires.contains_key(wire)) {
-                break;
-            }
-        }
-    }
 
     let bad_commands = commands
         .iter()
@@ -131,7 +80,7 @@ pub fn process(input: &[u8]) -> String {
             Operation::Orr(_, _, out) => {
                 // An Orr should never be connected to a final output excluding the last final output
                 if out[0] == b'z' {
-                    out != z_wires.last().unwrap()
+                    out != &largest_z
                 } else {
                     let as_input_commands = find_has_input(out, &commands);
 

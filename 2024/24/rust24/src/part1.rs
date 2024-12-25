@@ -62,12 +62,6 @@ pub fn process(input: &[u8]) -> usize {
                 x => unreachable!("We don't have any other commands {}", from_utf8(x).unwrap()),
             };
 
-            if a[0] == b'z' {
-                z_wires.insert(a);
-            }
-            if b[0] == b'z' {
-                z_wires.insert(b);
-            }
             if c[0] == b'z' {
                 z_wires.insert(c);
             }
